@@ -3,7 +3,7 @@ const music = document.getElementById('bgMusic');
 const musicBtn = document.getElementById('musicToggle');
 music.volume = 0.4;
 
-// Awalnya mati total
+// Awalnya mati + tombol hidden
 music.pause();
 musicBtn.classList.remove('visible');
 musicBtn.innerHTML = 'Play';
@@ -32,7 +32,7 @@ function show(id) {
   screens[id].classList.add('active');
 }
 
-// GAME LOGIC (tetap sama, sudah mulus)
+// GAME LOGIC
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth > 800 ? 800 : window.innerWidth - 40;
@@ -106,7 +106,7 @@ document.onkeydown = e => e.code === 'Space' && jump();
 
 // TOMBOL UTAMA
 document.getElementById('startBtn').onclick = () => {
-  // Munculin tombol musik + langsung play lagu
+  // Munculkan tombol musik + langsung play lagu
   musicBtn.classList.add('visible');
   music.play();
   musicBtn.innerHTML = 'Pause';
