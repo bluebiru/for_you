@@ -1,8 +1,9 @@
-// MUSIK
+// MUSIK + IKON PLAY/PAUSE
 const music = document.getElementById('bgMusic');
 const musicBtn = document.getElementById('musicToggle');
 music.volume = 0.4;
 
+// Awalnya mati total
 music.pause();
 musicBtn.classList.remove('visible');
 musicBtn.textContent = 'Play';
@@ -17,7 +18,7 @@ musicBtn.addEventListener('click', () => {
   }
 });
 
-// SCREEN
+// SCREEN MANAGER
 const screens = {
   start: document.getElementById('startScreen'),
   game: document.getElementById('gameScreen'),
@@ -29,16 +30,18 @@ const screens = {
 function show(id) {
   Object.values(screens).forEach(s => s.classList.remove('active'));
   screens[id].classList.add('active');
-  if (id !== 'game') disableControls();
+  if (id !== 'game') {
+    disableControls();
+  }
 }
 
-// GAME – STABIL TOTAL
+// GAME
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth > 800 ? 800 : window.innerWidth - 40;
 canvas.height = 300;
 
-let dino = { x:80, y:200, w:60, h:60, dy:0, gravity:0.8, jump:-16, grounded:true };
+let dino = {x:80,y:200,w:60,h:60,dy:0,gravity:0.8,jump:-16,grounded:true};
 let obstacles = [];
 let score = 0;
 let gameRunning = false;
@@ -49,9 +52,10 @@ const msg = document.getElementById('message');
 
 function enableControls() {
   canvas.onclick = jump;
-  canvas.ontouchstart = e => { e.preventDefault(); jump(); };
-  document.onkeydown = e Carlo => { if (e.code === 'Space') { e.preventDefault(); jump(); } };
+  canvas.ontouchstart = e => {e.preventDefault(); jump();};
+  document.onkeydown = e => {if (e.code === 'Space') {e.preventDefault(); jump();}};
 }
+
 function disableControls() {
   canvas.onclick = null;
   canvas.ontouchstart = null;
@@ -67,7 +71,7 @@ function drawDino() {
 
 function spawnObstacle() {
   if (obstacles.length === 0 || obstacles[obstacles.length-1].x < canvas.width - 350) {
-    obstacles.push({ x: canvas.width, passed: false });
+    obstacles.push({x:canvas.width, passed:false});
   }
 }
 
@@ -79,24 +83,26 @@ function gameLoop() {
   if (dino.y > 200) { dino.y = 200; dino.grounded = true; dino.dy = 0; }
   drawDino();
 
-  obstacles.forEach((o, i) => {
+  obstacles.forEach((o,i) => {
     o.x -= 7;
     ctx.fillStyle = '#d63384';
     ctx.fillRect(o.x, 240, 40, 60);
 
     if (!o.passed && o.x + 40 < dino.x) { o.passed = true; score += 10; scoreEl.textContent = score; }
-    if (o.x < dino.x + dino.w && o.x + 40 > dino.x && dino.y + dino.h > 240) { gameOver(); return; }
-    if (o.x < -50) obstacles.splice(i, 1);
+
+    if (o.x < dino.x + dino.w && o.x + 40 > dino.x && dino.y + dino.h > 240) {
+      gameOver(); return;
+    }
+    if (o.x < -50) obstacles.splice(i,1);
   });
 
   if (Math.random() < 0.015) spawnObstacle();
-  if (score >= 200) { gameRunning = false; cancelAnimationFrame(animationId); setTimeout(() => show('bintang'), 800); return; }
+  if (score >= 200) { gameRunning = false; cancelAnimationFrame(animationId); setTimeout(()=>show('bintang'), 800); return; }
 
   animationId = requestAnimationFrame(gameLoop);
 }
 
 function jump() { if (dino.grounded && gameRunning) { dino.grounded = false; dino.dy = dino.jump; } }
-
 function gameOver() {
   gameRunning = false;
   cancelAnimationFrame(animationId);
@@ -104,19 +110,17 @@ function gameOver() {
   msg.textContent = 'Aduh nabrak... ulang lagi yaaa';
   document.getElementById('restartBtn').style.display = 'block';
 }
-
 function startGame() {
-  score = 0; obstacles = []; scoreEl.textContent = '0';
-  msg.style.display = 'none'; document.getElementById('restartBtn').style.display = 'none';
+  score = 0; obstacles = []; scoreEl.textContent='0';
+  msg.style.display='none'; document.getElementById('restartBtn').style.display='none';
   dino.y = 200; dino.grounded = true; dino.dy = 0;
-
   gameRunning = true;
   cancelAnimationFrame(animationId);
   enableControls();
   gameLoop();
 }
 
-// TOMBOL
+// TOMBOL UTAMA
 document.getElementById('startBtn').onclick = () => {
   musicBtn.classList.add('visible');
   music.play();
