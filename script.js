@@ -132,7 +132,7 @@ function gameOver() {
   gameRunning = false;
   cancelAnimationFrame(animationId);
   msg.style.display = 'block';
-  msg.textContent = 'Aduh nabrak... ulang lagi yaaa ♡';
+  msg.textContent = 'Aduh nabrak... ulang lagi yaaa';
   document.getElementById('restartBtn').style.display = 'block';
 }
 
@@ -184,3 +184,4 @@ show = (id) => {
     disableControls();
   }
 };
+
