@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>For You</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- LAGU KAMU -->
+  <audio id="bgMusic" loop>
+    <source src="assets/New_Project.m4a" type="audio/mp4">
+  </audio>
+
+  <!-- Tombol musik (awalnya hidden) -->
+  <button id="musicToggle" aria-label="Toggle music">Play</button>
+
+  <!-- 1. Start Screen -->
+  <div class="screen active" id="startScreen">
+    <div class="content">
+      <h1>Hey Khayyira</h1>
+      <p>Aku punya surprise spesial banget buat kamu...<br>Tapi harus main minigames yang aku buat dulu, hehe</p>
+      <button id="startBtn">Mulai</button>
+    </div>
+  </div>
+
+  <!-- 2. Game Screen -->
+  <div class="screen" id="gameScreen">
+    <div id="scoreBoard">Score: <span id="score">0</span> / 200</div>
+    <div id="message"></div>
+    <canvas id="gameCanvas"></canvas>
+    <button id="restartBtn">Coba Lagi</button>
+  </div>
+
+  <!-- 3. Dino Bintang -->
+  <div class="screen" id="bintangScreen">
+    <img src="assets/Chrome_T-Rex_Left_Run.webp.png" class="dino-img" alt="Bintang">
+    <div class="bubble">
+      <p>Yeyyy kamu hebat bangettt!!<br>Kamu mau lihat sesuatu ga?</p>
+      <button id="nextBtn">Tekan ini yaaa...</button>
+    </div>
+  </div>
+
+  <!-- 4. Amplop -->
+  <div class="screen" id="envelopeScreen">
+    <div class="envelope" id="openEnvelope">
+      <div class="flap"></div>
+      <p>Klik surat ini</p>
+    </div>
+  </div>
+
+  <!-- 5. Surat Cinta Akhir -->
+  <div class="screen" id="finalLetter">
+    <div class="letter-paper">
+      <h2>Buat Khayyira</h2>
+      <p>Hai Khayyira</p>
+      <p>
+        Dari pertama aku melihat kamu, hatiku langsung memilihmu. 
+        Senyumanmu bikin aku meleleh dan tatapanmu membuat aku terpesona.
+      </p>
+      <p>Aku bikin website ini hanya untuk bilang ini ke kamu:</p>
+      <p class="big-love">
+        I love you, Khayyira.<br>
+        Can I be your boyfriend?
+      </p>
+      <p>
+        Aku janji bakal jagain kamu, nemenin kamu, ngebantu kamu, 
+        dan bikin kamu bahagia terus-terusan ♡
+      </p>
+      <p class="closing">
+        Kalau jawabannya "iya"... langsung chat aku ya cantikku.<br>
+        Aku nungguin sambil deg-degan nihhh.
+      </p>
+      <p class="signature">- From Bintang</p>
+      <div class="hearts">♡ ♡ ♡</div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
