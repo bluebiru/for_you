@@ -3,7 +3,6 @@ const music = document.getElementById('bgMusic');
 const musicBtn = document.getElementById('musicToggle');
 music.volume = 0.4;
 
-// Awalnya mati + tombol hidden
 music.pause();
 musicBtn.classList.remove('visible');
 musicBtn.innerHTML = 'Play';
@@ -32,7 +31,7 @@ function show(id) {
   screens[id].classList.add('active');
 }
 
-// ==================== GAME – FIX KECEPATAN ====================
+// ==================== GAME – 100% STABIL & AMAN ====================
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth > 800 ? 800 : window.innerWidth - 40;
@@ -42,10 +41,23 @@ let dino = { x:80, y:200, w:60, h:60, dy:0, gravity:0.8, jump:-16, grounded:true
 let obstacles = [];
 let score = 0;
 let gameRunning = false;
-let animationId = null; // ini yang penting!
+let animationId = null;
 
 const scoreEl = document.getElementById('score');
 const msg = document.getElementById('message');
+
+// Hanya aktifkan kontrol saat game benar-benar jalan
+function enableControls() {
+  canvas.onclick = jump;
+  canvas.ontouchstart = e => { e.preventDefault(); jump(); };
+  document.onkeydown = e => e.code === 'Space' && e.preventDefault() && jump();
+}
+
+function disableControls() {
+  canvas.onclick = null;
+  canvas.ontouchstart = null;
+  document.onkeydown = null;
+}
 
 function drawDino() {
   ctx.fillStyle = '#ff66cc';
@@ -65,7 +77,7 @@ function gameLoop() {
 
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  // Dino physics
+  // Dino
   if (!dino.grounded) {
     dino.dy += dino.gravity;
     dino.y += dino.dy;
@@ -77,20 +89,18 @@ function gameLoop() {
   }
   drawDino();
 
-  // Obstacles
+  // Kaktus
   obstacles.forEach((o, i) => {
-    o.x -= 7; // kecepatan stabil
+    o.x -= 7;
     ctx.fillStyle = '#d63384';
     ctx.fillRect(o.x, 240, 40, 60);
 
-    // Skor hanya saat lewatin
     if (!o.passed && o.x + 40 < dino.x) {
       o.passed = true;
       score += 10;
       scoreEl.textContent = score;
     }
 
-    // Tabrakan
     if (o.x < dino.x + dino.w && o.x + 40 > dino.x && dino.y + dino.h > 240) {
       gameOver();
       return;
@@ -99,10 +109,8 @@ function gameLoop() {
     if (o.x < -50) obstacles.splice(i, 1);
   });
 
-  // Spawn kaktus (jarak aman)
   if (Math.random() < 0.015) spawnObstacle();
 
-  // Menang
   if (score >= 200) {
     gameRunning = false;
     cancelAnimationFrame(animationId);
@@ -124,12 +132,12 @@ function gameOver() {
   gameRunning = false;
   cancelAnimationFrame(animationId);
   msg.style.display = 'block';
-  msg.textContent = 'Aduh nabrak... ulang lagi yaaa';
+  msg.textContent = 'Aduh nabrak... ulang lagi yaaa ♡';
   document.getElementById('restartBtn').style.display = 'block';
 }
 
 function startGame() {
-  // Reset semua
+  // Reset
   score = 0;
   obstacles = [];
   scoreEl.textContent = '0';
@@ -140,14 +148,10 @@ function startGame() {
   dino.dy = 0;
 
   gameRunning = true;
-  cancelAnimationFrame(animationId); // pastikan nggak double
-  gameLoop(); // mulai loop yang benar
+  cancelAnimationFrame(animationId);
+  enableControls();        // ← baru aktifin kontrol
+  gameLoop();
 }
-
-// KONTROL
-canvas.onclick = jump;
-canvas.ontouchstart = e => { e.preventDefault(); jump(); };
-document.onkeydown = e => e.code === 'Space' && jump();
 
 // TOMBOL UTAMA
 document.getElementById('startBtn').onclick = () => {
@@ -159,9 +163,24 @@ document.getElementById('startBtn').onclick = () => {
   startGame();
 };
 
-document.getElementById('restartBtn').onclick = startGame;
+document.getElementById('restartBtn').onclick = () => {
+  startGame(); // kontrol otomatis aktif lagi
+};
+
 document.getElementById('nextBtn').onclick = () => show('envelope');
+
 document.getElementById('openEnvelope').onclick = () => {
   document.querySelector('.flap').style.transform = 'rotateX(180deg)';
   setTimeout(() => show('letter'), 800);
+};
+
+// Matikan kontrol saat pindah screen (biar aman)
+show = (id) => {
+  Object.values(screens).forEach(s => s.classList.remove('active'));
+  screens[id].classList.add('active');
+  
+  // Matikan kontrol kalau bukan di game
+  if (id !== 'game') {
+    disableControls();
+  }
 };
