@@ -1,23 +1,23 @@
-// MUSIK + IKON PLAY/PAUSE
+// MUSIK
 const music = document.getElementById('bgMusic');
 const musicBtn = document.getElementById('musicToggle');
 music.volume = 0.4;
 
 music.pause();
 musicBtn.classList.remove('visible');
-musicBtn.innerHTML = 'Play';
+musicBtn.textContent = 'Play';
 
 musicBtn.addEventListener('click', () => {
   if (music.paused) {
     music.play();
-    musicBtn.innerHTML = 'Pause';
+    musicBtn.textContent = 'Pause';
   } else {
     music.pause();
-    musicBtn.innerHTML = 'Play';
+    musicBtn.textContent = 'Play';
   }
 });
 
-// SCREEN MANAGER
+// SCREEN
 const screens = {
   start: document.getElementById('startScreen'),
   game: document.getElementById('gameScreen'),
@@ -29,9 +29,10 @@ const screens = {
 function show(id) {
   Object.values(screens).forEach(s => s.classList.remove('active'));
   screens[id].classList.add('active');
+  if (id !== 'game') disableControls();
 }
 
-// ==================== GAME – 100% STABIL & AMAN ====================
+// GAME – STABIL TOTAL
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth > 800 ? 800 : window.innerWidth - 40;
@@ -46,13 +47,11 @@ let animationId = null;
 const scoreEl = document.getElementById('score');
 const msg = document.getElementById('message');
 
-// Hanya aktifkan kontrol saat game benar-benar jalan
 function enableControls() {
   canvas.onclick = jump;
   canvas.ontouchstart = e => { e.preventDefault(); jump(); };
-  document.onkeydown = e => e.code === 'Space' && e.preventDefault() && jump();
+  document.onkeydown = e Carlo => { if (e.code === 'Space') { e.preventDefault(); jump(); } };
 }
-
 function disableControls() {
   canvas.onclick = null;
   canvas.ontouchstart = null;
@@ -74,59 +73,29 @@ function spawnObstacle() {
 
 function gameLoop() {
   if (!gameRunning) return;
-
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  // Dino
-  if (!dino.grounded) {
-    dino.dy += dino.gravity;
-    dino.y += dino.dy;
-  }
-  if (dino.y > 200) {
-    dino.y = 200;
-    dino.grounded = true;
-    dino.dy = 0;
-  }
+  if (!dino.grounded) { dino.dy += dino.gravity; dino.y += dino.dy; }
+  if (dino.y > 200) { dino.y = 200; dino.grounded = true; dino.dy = 0; }
   drawDino();
 
-  // Kaktus
   obstacles.forEach((o, i) => {
     o.x -= 7;
     ctx.fillStyle = '#d63384';
     ctx.fillRect(o.x, 240, 40, 60);
 
-    if (!o.passed && o.x + 40 < dino.x) {
-      o.passed = true;
-      score += 10;
-      scoreEl.textContent = score;
-    }
-
-    if (o.x < dino.x + dino.w && o.x + 40 > dino.x && dino.y + dino.h > 240) {
-      gameOver();
-      return;
-    }
-
+    if (!o.passed && o.x + 40 < dino.x) { o.passed = true; score += 10; scoreEl.textContent = score; }
+    if (o.x < dino.x + dino.w && o.x + 40 > dino.x && dino.y + dino.h > 240) { gameOver(); return; }
     if (o.x < -50) obstacles.splice(i, 1);
   });
 
   if (Math.random() < 0.015) spawnObstacle();
-
-  if (score >= 200) {
-    gameRunning = false;
-    cancelAnimationFrame(animationId);
-    setTimeout(() => show('bintang'), 800);
-    return;
-  }
+  if (score >= 200) { gameRunning = false; cancelAnimationFrame(animationId); setTimeout(() => show('bintang'), 800); return; }
 
   animationId = requestAnimationFrame(gameLoop);
 }
 
-function jump() {
-  if (dino.grounded && gameRunning) {
-    dino.grounded = false;
-    dino.dy = dino.jump;
-  }
-}
+function jump() { if (dino.grounded && gameRunning) { dino.grounded = false; dino.dy = dino.jump; } }
 
 function gameOver() {
   gameRunning = false;
@@ -137,51 +106,28 @@ function gameOver() {
 }
 
 function startGame() {
-  // Reset
-  score = 0;
-  obstacles = [];
-  scoreEl.textContent = '0';
-  msg.style.display = 'none';
-  document.getElementById('restartBtn').style.display = 'none';
-  dino.y = 200;
-  dino.grounded = true;
-  dino.dy = 0;
+  score = 0; obstacles = []; scoreEl.textContent = '0';
+  msg.style.display = 'none'; document.getElementById('restartBtn').style.display = 'none';
+  dino.y = 200; dino.grounded = true; dino.dy = 0;
 
   gameRunning = true;
   cancelAnimationFrame(animationId);
-  enableControls();        // ← baru aktifin kontrol
+  enableControls();
   gameLoop();
 }
 
-// TOMBOL UTAMA
+// TOMBOL
 document.getElementById('startBtn').onclick = () => {
   musicBtn.classList.add('visible');
   music.play();
-  musicBtn.innerHTML = 'Pause';
-
+  musicBtn.textContent = 'Pause';
   show('game');
   startGame();
 };
 
-document.getElementById('restartBtn').onclick = () => {
-  startGame(); // kontrol otomatis aktif lagi
-};
-
+document.getElementById('restartBtn').onclick = startGame;
 document.getElementById('nextBtn').onclick = () => show('envelope');
-
 document.getElementById('openEnvelope').onclick = () => {
   document.querySelector('.flap').style.transform = 'rotateX(180deg)';
   setTimeout(() => show('letter'), 800);
 };
-
-// Matikan kontrol saat pindah screen (biar aman)
-show = (id) => {
-  Object.values(screens).forEach(s => s.classList.remove('active'));
-  screens[id].classList.add('active');
-  
-  // Matikan kontrol kalau bukan di game
-  if (id !== 'game') {
-    disableControls();
-  }
-};
-
